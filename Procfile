@@ -1,1 +1,1 @@
-web: scrapy crawl termekek
+web: python app.py
