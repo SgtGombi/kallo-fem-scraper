@@ -2,8 +2,13 @@ from flask import Flask, jsonify
 import subprocess
 import os
 import json
+from pathlib import Path
 
 app = Flask(__name__)
+
+# Projekt gyökérkönyvtárának meghatározása
+PROJECT_ROOT = Path(__file__).parent.resolve()
+SCRAPY_PROJECT_DIR = PROJECT_ROOT / "kallofem_scraper"  # A Scrapy projekt mappája
 
 
 @app.route('/')
@@ -14,19 +19,45 @@ def home():
 @app.route('/scrape')
 def scrape():
     output_file = 'result.json'
-    cmd = ['scrapy', 'crawl', 'termekek', '-o', output_file, '-t', 'json']
+    output_path = SCRAPY_PROJECT_DIR / output_file
 
-    # Projekt gyökerére állítjuk a cwd-t, ahol a scrapy.cfg van
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    proc = subprocess.run(cmd, cwd=base_dir, capture_output=True, text=True)
+    # Töröljük a korábbi eredményfájlt, ha létezik
+    if output_path.exists():
+        output_path.unlink()
 
-    if proc.returncode != 0:
-        return jsonify({'error': proc.stderr}), 500
+    # Scrapy parancs összeállítása
+    cmd = [
+        'scrapy',
+        'crawl',
+        'termekek',
+        '-o', str(output_path),
+        '-t', 'json'
+    ]
 
     try:
-        with open(os.path.join(base_dir, output_file), 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        return jsonify(data)
+        # Scrapy futtatása a projekt mappában
+        result = subprocess.run(
+            cmd,
+            cwd=SCRAPY_PROJECT_DIR,
+            capture_output=True,
+            text=True,
+            timeout=300  # 5 perc timeout
+        )
+
+        if result.returncode != 0:
+            error_msg = f"Scrapy hiba: {result.stderr}" if result.stderr else "Ismeretlen Scrapy hiba"
+            return jsonify({'error': error_msg}), 500
+
+        # Eredmény beolvasása
+        if output_path.exists():
+            with open(output_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return jsonify(data)
+        else:
+            return jsonify({'error': 'Nincs kimeneti fájl', 'scrapy_output': result.stdout}), 500
+
+    except subprocess.TimeoutExpired:
+        return jsonify({'error': 'A scrapelés túllépte az időkeretet'}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
