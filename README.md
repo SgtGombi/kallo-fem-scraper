@@ -1,5 +1,5 @@
 # KÁLLÓ-Fém Webshop Scraper
-
+# GITHUB LINK: https://github.com/SgtGombi/kallo-fem-scraper
 ## Projekt feladata:
 A KÁLLÓ-Fém webshop /keriteselemek oldal termékeinek kigyűjtése
 Scrapy használatával, illetve eseti duplikációellenőrzés a checkduplicates.py által.
