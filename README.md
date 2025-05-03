@@ -28,7 +28,8 @@ Scrapy használatával, illetve eseti duplikációellenőrzés a checkduplicates
 - checkduplicates.py -- Duplikátum ellenőrző
 - termekek.json -- Példa kimenet
 - README.md -- Dokumentáció
-- app.py/result.json/requirements.txt/Procfile -- RENDER fájlok
+- venv/app.py/result.json/requirements.txt/Procfile -- RENDER fájlok
+- iSwearItWorks.png -- RENDER futás minta
 
 ## 5. Spider: termekek_spider.py
 #### A webshop tanulmányozása után tett megállapítások:
@@ -56,5 +57,6 @@ amely flask segítségével subprocess által lefuttatja a "termekek" nevű spid
 visszaküldi.
 
 ## 8. Render megjegyzés:
-A Heroku teljesen fizetőssé vált, a RENDER pedig nagyon gyenge futást eredményez a próba/ingyenes verzióban. Futást 30mp-nél tovább nem engedélyez, így megtörténhet hogy a komplett scrape nem fut le (mivel a lekért adat jelenleg 1902 elem/68 oldal), így az adat hiányos lesz. A futás körülményei sem egyszerűbbek, ebben a verzióban gyakorlatilag a webservice kikapcsol 15 perc után, és csak kérésre (link megnyitására) indul, ami további késedelmeket okozhat, akár csak oldalfrissítésre tölthet be. Ezen az sem segít hogy a CPU 10%-át kapjuk meg/512mb ram-ot ebben a csomagban.
+A Heroku teljesen fizetőssé vált, a RENDER pedig nagyon gyenge futást eredményez a próba/ingyenes (10% CPU kihasználás, 512mb ram) verzióban. Futást 50mp-nél tovább nem engedélyez, így megtörténhet hogy a komplett scrape nem fut le (mivel a lekért adat jelenleg 1902 elem/68 oldal), így az adat hiányos lesz. A futás körülményei sem egyszerűbbek, ebben a verzióban gyakorlatilag a webservice kikapcsol 15 perc után, és csak manuálisan (render-dashboard belépésre) indul, ami további késedelmeket okozhat, vagy sajnos egyáltalán nem indul.
+A futás ellenőrzésre került, aktív állapotban a webservice az "iSwearItWorks.png" képen látható eredményt adja.
 ### Célszerűbb a projektem tényleges tesztelése a fent leírt módokon.
